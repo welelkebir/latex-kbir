@@ -1,0 +1,129 @@
+\documentclass{beamer}
+\usetheme{Madrid}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{tikz}
+
+\title{Le Perceptron Multicouche (MLP)}
+\subtitle{Une courte introduction}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Qu'est-ce qu'un MLP ?}
+  \begin{itemize}
+    \item Un \textbf{réseau de neurones à propagation avant} (\emph{feedforward}).
+    \item Composé de plusieurs couches de neurones :
+    \begin{itemize}
+      \item une couche d'\textbf{entrée},
+      \item une ou plusieurs couches \textbf{cachées},
+      \item une couche de \textbf{sortie}.
+    \end{itemize}
+    \item Chaque neurone d'une couche est connecté à tous les neurones de la couche suivante (couches \emph{denses}).
+    \item Utilisé en classification, en régression, et comme brique de base de nombreux modèles modernes.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Architecture}
+  \centering
+  \begin{tikzpicture}[
+      neuron/.style={circle, draw, minimum size=0.7cm},
+      >=stealth, scale=1.1]
+    % Entrée
+    \foreach \i in {1,2,3}
+      \node[neuron, fill=blue!20] (I\i) at (0,-\i) {$x_\i$};
+    % Cachée
+    \foreach \j in {1,2,3,4}
+      \node[neuron, fill=green!20] (H\j) at (2.5,-\j+0.5) {};
+    % Sortie
+    \foreach \k in {1,2}
+      \node[neuron, fill=red!20] (O\k) at (5,-\k-0.5) {$\hat{y}_\k$};
+    % Connexions
+    \foreach \i in {1,2,3}
+      \foreach \j in {1,2,3,4}
+        \draw[->, gray] (I\i) -- (H\j);
+    \foreach \j in {1,2,3,4}
+      \foreach \k in {1,2}
+        \draw[->, gray] (H\j) -- (O\k);
+    % Légendes
+    \node at (0,0) {\small Entrée};
+    \node at (2.5,0.9) {\small Couche cachée};
+    \node at (5,-0.6) {\small Sortie};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Fonctionnement d'un neurone}
+  Chaque couche $l$ calcule :
+  \[
+    \mathbf{h}^{(l)} = \sigma\!\left( W^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)} \right)
+  \]
+  \begin{itemize}
+    \item $W^{(l)}$ : matrice des poids, $\mathbf{b}^{(l)}$ : biais.
+    \item $\sigma$ : fonction d'activation \textbf{non linéaire} :
+    \begin{itemize}
+      \item ReLU : $\sigma(z) = \max(0, z)$
+      \item Sigmoïde : $\sigma(z) = \dfrac{1}{1 + e^{-z}}$
+      \item Tangente hyperbolique : $\tanh(z)$
+    \end{itemize}
+    \item Sans non-linéarité, le MLP se réduirait à un simple modèle linéaire.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Apprentissage}
+  \begin{enumerate}
+    \item \textbf{Propagation avant} : calcul de la prédiction $\hat{y}$.
+    \item \textbf{Fonction de perte} : mesure l'erreur, par ex.
+      \[
+        \mathcal{L} = \frac{1}{N}\sum_{i=1}^{N} (y_i - \hat{y}_i)^2
+        \quad \text{ou l'entropie croisée.}
+      \]
+    \item \textbf{Rétropropagation} : calcul des gradients $\frac{\partial \mathcal{L}}{\partial W}$ par la règle de dérivation en chaîne.
+    \item \textbf{Descente de gradient} : mise à jour des poids
+      \[
+        W \leftarrow W - \eta \, \frac{\partial \mathcal{L}}{\partial W}
+      \]
+      où $\eta$ est le taux d'apprentissage.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Forces et limites}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Forces}
+      \begin{itemize}
+        \item Approximateur universel de fonctions.
+        \item Simple à implémenter.
+        \item Polyvalent.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Limites}
+      \begin{itemize}
+        \item Risque de surapprentissage.
+        \item Nombreux paramètres.
+        \item N'exploite pas la structure des données (images, séquences) : on lui préfère alors les CNN ou les Transformers.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Conclusion}
+  \begin{itemize}
+    \item Le MLP est le modèle fondamental de l'apprentissage profond.
+    \item Il combine couches denses et activations non linéaires.
+    \item Il s'entraîne par rétropropagation et descente de gradient.
+    \item Il reste une composante clé des architectures modernes.
+  \end{itemize}
+  \vfill
+  \centering
+  \Large Merci de votre attention !
+\end{frame}
+
+\end{document}
